@@ -3,14 +3,16 @@ import { powerSvg } from "./Svg";
 import { AuthContext } from "../../store/AuthContext";
 
 const SessionCard = () => {
-  const { startSession, setStartSession } = useContext(AuthContext);
+  const { startSession, setStartSession, setShowSessionDetails, setShowCode } =
+    useContext(AuthContext);
 
   const startSessionHandler = () => {
-    setStartSession((prevState) => !prevState);
+    setShowSessionDetails((prevState) => !prevState);
   };
 
   const endSessionHandler = () => {
     setStartSession((prevState) => !prevState);
+    setShowCode((prevState) => !prevState);
   };
 
   return (
@@ -19,11 +21,11 @@ const SessionCard = () => {
         <div className="text-center bg-white rounded-2xl py-6 w-[90%] sm:w-[70%] mx-auto">
           <div className="flex justify-center">
             {startSession ? (
-              <button className="text-red-500" onClick={startSessionHandler}>
+              <button className="text-red-500" onClick={endSessionHandler}>
                 {powerSvg}
               </button>
             ) : (
-              <button className="text-green-500" onClick={endSessionHandler}>
+              <button className="text-green-500" onClick={startSessionHandler}>
                 {powerSvg}
               </button>
             )}
