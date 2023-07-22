@@ -4,8 +4,10 @@ import Navbar from "../components/layout/Navbar";
 const ClassRepRoute = () => {
   return (
     <>
-      <Navbar />
-      <Outlet />
+      <div>
+        <Navbar />
+        <Outlet />
+      </div>
     </>
   );
 };
