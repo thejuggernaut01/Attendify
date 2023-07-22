@@ -4,10 +4,10 @@ export const AuthContext = React.createContext();
 
 export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
-  const [stateSession, setStartSession] = useState(false);
+  const [startSession, setStartSession] = useState(false);
 
   const value = {
-    stateSession,
+    startSession,
     setStartSession,
   };
 

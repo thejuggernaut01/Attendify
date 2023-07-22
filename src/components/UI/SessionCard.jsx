@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useContext } from "react";
 import { powerSvg } from "./Svg";
+import { AuthContext } from "../../store/AuthContext";
 
 const SessionCard = () => {
-  const [startSession, setStartSession] = useState(false);
+  const { startSession, setStartSession } = useContext(AuthContext);
 
   const startSessionHandler = () => {
     setStartSession((prevState) => !prevState);
