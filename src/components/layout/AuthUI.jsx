@@ -169,9 +169,11 @@ function Login(props) {
             Register
             <hr className='mt-2 w-20 border' />
             </button>
-            { registered ? <p onClick={lecturerRegister} className='text-gray-500 cursor-pointer'>Don't have an account?</p>
+            <div className='items-center flex justify-center'>
+            { registered ? <p onClick={lecturerRegister} className='cursor-pointer'>Don't have an account?</p>
             : 
-            <p onClick={lecturerLogin} className='text-gray-500 cursor-pointer'>Already have an account?</p>}
+            <p onClick={lecturerLogin} className='text-gray-500  cursor-pointer'>Already have an account?</p>}
+            </div>
 </form>
     </div>
   )
