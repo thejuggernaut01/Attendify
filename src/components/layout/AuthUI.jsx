@@ -2,6 +2,11 @@ import React, { useEffect, useState } from 'react'
 
 function Login(props) {
 
+  // Input Field Counter
+  const [counter, setCounter] = useState(1);
+  const [registered, setRegistered] = useState(false);
+  const [isStudent, setIsStudent] = useState(false);
+
   // Sign Up States
   const [lecturer_full_name, set_lecturer_full_name] = useState("");
   const [lectuer_department, set_lecturer_department] = useState("");
@@ -26,8 +31,8 @@ function Login(props) {
   const [lecturer_login_password, set_lecturer_login_password] = useState("");
 
 
-
   // Lecturer Fields
+
   const lecturerSignUpData = [
     { placeholder: "Enter Full Name", value: lecturer_full_name, type:"text", stateManager: set_lecturer_full_name },
     { placeholder: "Enter Department", value: lectuer_department, type:"text", stateManager: set_lecturer_department },
@@ -36,8 +41,6 @@ function Login(props) {
     { placeholder: "Enter Password", value: lecturer_password, type:"password", stateManager: set_lecturer_password },
     { placeholder: "Verify Password", value: lecturer_re_password, type:"password", stateManager: set_lecturer_repassword },
   ];
-
-  
 
   const lecturerLoginData = [
     { placeholder: "Enter Email", value: lecturer_login_email, type:"email", stateManager: set_lecturer_login_email},
@@ -60,8 +63,45 @@ function Login(props) {
     { placeholder: "Enter Password", value: student_login_password, type:"password", stateManager: set_student_login_password },
   ];
 
+  const inputFields = [lecturerLoginData, lecturerSignUpData, studentLoginData, studentSignUpData];
+
+  const resetAllFields = () => {
+    // Iterate through the inputFields array and reset each state to empty
+    inputFields.forEach((fieldsArray) => {
+      fieldsArray.forEach((data) => {
+        data.stateManager('');
+      });
+    });
+  };
+
+  const lecturerRegister = () => {
+    resetAllFields();
+    setCounter(1);
+    setRegistered(false);
+    setIsStudent(false);
+  }
+
+  const lecturerLogin = () => {
+    resetAllFields();
+    setCounter(0);
+    setRegistered(true);
+    setIsStudent(false);
+  }
 
 
+  const studentRegister = () => {
+    resetAllFields()
+    setCounter(3);
+    setRegistered(false);
+    setIsStudent(true);
+  }
+
+  const studentLogin = () => {
+    resetAllFields()
+    setCounter(2);
+    setRegistered(true);
+    setIsStudent(true)
+  }
 
   return (
     <div className=' 
@@ -72,16 +112,35 @@ function Login(props) {
     
     <img className='m-auto pt-8' src={props.logo}/>
 
-    <div className='flex justify-around mt-2 text-white'>
-    <div className='items-center text-center'>
-    <p>Lecturer Login</p>
-    <div className='mt-2 bg-blue-800 h-[3px] rounded-full m-auto w-32'></div>
+    <div className='flex justify-around mt-2 cursor-pointer text-white'>
+    { registered ? 
+      <div  onClick={lecturerLogin} className='items-center text-center'>
+      <p>Lecturer Login</p>
+    <div className={isStudent ? 'mt-2 bg-white h-[3px] rounded-full m-auto w-32' : 'mt-2 bg-blue-800 h-[3px] rounded-full m-auto w-32' }></div>
+    </div> 
+    
+    :
+
+    <div onClick={lecturerRegister} className='items-center text-center'>
+    <p>Lecturer Register</p>
+    <div className={isStudent ? 'mt-2 bg-white h-[3px] rounded-full m-auto w-32' : 'mt-2 bg-blue-800 h-[3px] rounded-full m-auto w-32' }></div>
     </div>
 
-    <div className='items-center text-center'>
+  }
+
+    { registered ?
+      <div onClick={studentLogin} className='items-center text-center cursor-pointer'>
     <p>Student Login</p>
-    <div className='mt-2 bg-white h-[3px] rounded-full m-auto w-32'></div>
+    <div className={isStudent ? 'mt-2 bg-blue-800 h-[3px] rounded-full m-auto w-32' : 'mt-2 bg-white h-[3px] rounded-full m-auto w-32' }></div>
     </div>
+    :
+
+    <div onClick={studentRegister} className='items-center text-center cursor-pointer'>
+    <p>Student Register</p>
+    <div className={isStudent ? 'mt-2 bg-blue-800 h-[3px] rounded-full m-auto w-32' : 'mt-2 bg-white h-[3px] rounded-full m-auto w-32' }></div>
+    </div>
+  
+  }
     
     </div>
 
@@ -90,7 +149,7 @@ function Login(props) {
    <div className='w-full md:w-1/2 p-2 space-y-8 w-100 m-auto'>
 
     
-  {lecturerLoginData.map((data, index) => (
+  {inputFields[counter].map((data, index) => (
     <input
       key={index}
       type={data.type}
@@ -110,7 +169,9 @@ function Login(props) {
             Register
             <hr className='mt-2 w-20 border' />
             </button>
-            <p className='text-gray-500   cursor-pointer'>Don't have an account?</p>
+            { registered ? <p onClick={lecturerRegister} className='text-gray-500 cursor-pointer'>Don't have an account?</p>
+            : 
+            <p onClick={lecturerLogin} className='text-gray-500 cursor-pointer'>Already have an account?</p>}
 </form>
     </div>
   )
