@@ -8,6 +8,7 @@ import Homepage from "./components/layout/Homepage";
 import StudentRoute from "./pages/StudentRoute";
 import Session from "./pages/Session";
 import Splashscreen from "./components/layout/Splashscreen";
+import Lecturer from "./components/layout/Lecturer";
 
 function App() {
   const router = createBrowserRouter([
@@ -24,6 +25,16 @@ function App() {
     {
       path: "student",
       element: <StudentRoute />,
+      children: [
+        {
+          index: true,
+          element: <Session />,
+        },
+      ],
+    },
+    {
+      path: "lecturer",
+      element: <Lecturer/>,
       children: [
         {
           index: true,
