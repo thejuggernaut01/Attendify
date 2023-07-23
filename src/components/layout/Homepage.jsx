@@ -1,6 +1,6 @@
 import NavbarHome from "./NavbarHome";
 import IconHome from '../../icons/icon_hme.svg'
-import Login from "./Login";
+import AuthUI from "./AuthUI";
 const Homepage = (props) => {
   return (
     <>
@@ -29,10 +29,10 @@ const Homepage = (props) => {
      dummy text ever since the 1500s.
      </p>
 
-     <img src={IconHome} alt="IconHome" className="w-screen lg:w-[80%] m-auto my-12 lg:my-6"/>
+     <img src={IconHome} alt="IconHome" className="w-screen lg:w-[100%] m-auto my-12 lg:my-6"/>
 
 
-     <Login logo={props.logoBlue}/>
+     <AuthUI className="max-h-screen" logo={props.logoBlue}/>
     </div>
     </>
   );
