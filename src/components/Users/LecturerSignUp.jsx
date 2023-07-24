@@ -58,4 +58,4 @@ function LecturerSignUp() {
   )
 }
 
-export default LecturerSignIn
+export default LecturerSignUp

@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import LecturerLogin from '../Users/LecturerLogin';
+import LecturerSignIn from '../Users/LecturerSignUp';
+import StudentLogin from '../Users/StudentLogin';
+import StudentSignUp from '../Users/StudentSignUp';
+import LecturerSignUp from '../Users/LecturerSignUp';
 
 function Auth(props) {
   // Input Field Counter
@@ -49,6 +53,10 @@ function Auth(props) {
     </div>
 
     {currentForm}
+    <LecturerLogin/>
+    <LecturerSignUp/>
+    <StudentLogin/>
+    <StudentSignUp/>
     </div>
   )
 }
