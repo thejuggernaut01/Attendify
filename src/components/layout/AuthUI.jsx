@@ -53,10 +53,6 @@ function Auth(props) {
     </div>
 
     {currentForm}
-    <LecturerLogin/>
-    <LecturerSignUp/>
-    <StudentLogin/>
-    <StudentSignUp/>
     </div>
   )
 }
