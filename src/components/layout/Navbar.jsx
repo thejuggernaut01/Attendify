@@ -8,7 +8,7 @@ const Navbar = () => {
         <div className="bg-black border border-black rounded-full p-2">
           {attendifyLogo}
         </div>
-        <h1 className="text-3xl">Attendify</h1>
+        <h1 className="text-xl">Attendify</h1>
         <div className="bg-black border border-black rounded-full p-2 text-white cursor-pointer">
           {bars}
         </div>
