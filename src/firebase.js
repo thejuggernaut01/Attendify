@@ -4,12 +4,12 @@ import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: process.env.REACT_APP_API_KEY,
-  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
-  projectId: process.env.REACT_APP_PROJECT_DOMAIN,
-  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
-  messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
-  appId: process.env.REACT_APP_APP_ID,
+  apiKey: "AIzaSyAI4JEgZgwRlSXId2JCFzrZ2Cp6sQgW7-s",
+  authDomain: "attendify-system.firebaseapp.com",
+  projectId: "attendify-system",
+  storageBucket: "attendify-system.appspot.com",
+  messagingSenderId: "162295424529",
+  appId: "1:162295424529:web:305b97478ae9a008baf3b0",
 };
 
 // Initialize Firebase
