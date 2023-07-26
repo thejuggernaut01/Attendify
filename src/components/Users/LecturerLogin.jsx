@@ -43,7 +43,7 @@ function LecturerLogin() {
    ))}
      </div>
      <button onClick={lecturerLogin} className="mt-8" type='submit'>
-             Register
+             Login
              <hr className='mt-2 w-20 border' />
              </button>
  </form>
