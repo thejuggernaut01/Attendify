@@ -6,8 +6,8 @@ const Session = () => {
   return (
     <>
       <article className="mb-16">
-        <StudentCard initials={"H"} name={"Habeeb Lateef"} departmentLevel={"Computer Science, 300L"} />
-        <SessionCard  />
+        <StudentCard />
+        <SessionCard />
         <SessionDetails />
       </article>
     </>

@@ -76,11 +76,13 @@ function LecturerSignUp() {
 
     if (!emailRegex.test(lecturer_email) || lecturer_email.trim() === "") {
       setError("Enter a valid email address");
+      setLoading(false);
       return;
     }
 
     if (lecturer_password !== lecturer_re_password) {
       setError("Password does not match");
+      setLoading(false);
       return;
     }
 
@@ -99,6 +101,8 @@ function LecturerSignUp() {
       console.log(error.message);
       if (error.message.includes("weak-password")) {
         setError("Password should be at least 6 characters ");
+      } else {
+        setError("An unexpected error occurred");
       }
     }
     setLoading(false);
