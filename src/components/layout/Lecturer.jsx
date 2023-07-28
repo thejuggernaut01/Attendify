@@ -5,6 +5,7 @@ import AddIcon from '../../icons/icon_addicon.svg';
 import CourseCard from '../UI/CourseCard';
 import { db } from '../../firebase';
 import { collection, addDoc, getDocs } from 'firebase/firestore';
+import LectuerCard from '../UI/LecturerCard';
 
 function Lecturer() { 
   const [classRepMail, setClassRepMail] = useState('');
@@ -60,7 +61,8 @@ function Lecturer() {
   return (
     <div className='bg-gray-100 h-full pb-16'>
      <Navbar />
-      <StudentCard initials={'P'} name={'Prof. Aribisala'} departmentLevel={'Computer Science'} />
+     
+      <LectuerCard/>
       <section className='mt-5'>
         <div className='text-center bg-white rounded-2xl py-6 w-[90%] sm:w-[70%] mx-auto'>
           <div className='flex justify-center'>
