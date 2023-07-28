@@ -85,6 +85,8 @@ function LecturerSignUp() {
       setLoading(false);
       return;
     }
+    setLoading(false)
+    
 
     try {
       await signUp(lecturer_email, lecturer_password);
