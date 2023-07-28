@@ -83,6 +83,8 @@ function LecturerSignUp() {
       setError("Password does not match");
       return;
     }
+    setLoading(false)
+    
 
     try {
       await signUp(lecturer_email, lecturer_password);
