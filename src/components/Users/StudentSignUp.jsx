@@ -82,11 +82,13 @@ function StudentSignUp() {
 
     if (!emailRegex.test(student_email) || student_email.trim() === "") {
       setError("Enter a valid email address");
+      setLoading(false);
       return;
     }
 
     if (student_password !== student_re_password) {
       setError("Password does not match");
+      setLoading(false);
       return;
     }
 
@@ -106,6 +108,8 @@ function StudentSignUp() {
       console.log(error.message);
       if (error.message.includes("weak-password")) {
         setError("Password should be at least 6 characters ");
+      } else {
+        setError("An unexpected error occurred");
       }
     }
     setLoading(false);

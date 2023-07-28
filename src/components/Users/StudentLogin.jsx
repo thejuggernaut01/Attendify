@@ -49,6 +49,8 @@ function StudentLogin() {
         setError("User Not Found");
       } else if (error.message.includes("wrong-password")) {
         setError("Wrong Password");
+      } else {
+        setError("An unexpected error occurred");
       }
     }
     setLoading(false);
