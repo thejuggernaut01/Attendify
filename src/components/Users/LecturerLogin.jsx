@@ -1,8 +1,10 @@
 import React, { useState, useContext } from "react";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
 import { AuthContext } from "../../store/AuthContext";
 import Loader from "../helpers/Loader";
+import { db } from "../../firebase";
 
 function LecturerLogin() {
   const [lecturer_login_email, set_lecturer_login_email] = useState("");
@@ -12,6 +14,8 @@ function LecturerLogin() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+
+  const lecturerCollection = collection(db, "lecturerCollection");
 
   const lecturerLoginData = [
     {
@@ -40,9 +44,20 @@ function LecturerLogin() {
 
     setError("");
     setLoading(true);
+
     try {
-      await login(lecturer_login_email, lecturer_login_password);
-      navigate("/lecturer");
+      const lecturerQuery = query(
+        lecturerCollection,
+        where("email", "==", lecturer_login_email)
+      );
+      const querySnapshot = await getDocs(lecturerQuery);
+
+      if (!querySnapshot.empty) {
+        await login(lecturer_login_email, lecturer_login_password);
+        navigate("/lecturer");
+      } else {
+        setError("Lecturer Login Details Not Found!");
+      }
     } catch (error) {
       console.log(error.message);
       if (error.message.includes("user-not-found")) {
