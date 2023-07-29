@@ -2,15 +2,22 @@ import { useState, useEffect, useContext } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { AuthContext } from "../../store/AuthContext";
 import { db } from "../../firebase";
+import { useNavigate } from "react-router-dom"; 
 
 const StudentCard = (props) => {
   const [studentData, setStudentData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [avatar, setAvatar] = useState("")
   const { currentUser } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const studentCollection = collection(db, "studentCollection");
 
   useEffect(() => {
+    if (!currentUser) {
+      // Step 2: Red irect if the user is not logged in
+      navigate("/home");
+    }else{
     const fetchStudentData = async () => {
       try {
         setLoading(true);
@@ -23,6 +30,7 @@ const StudentCard = (props) => {
         if (!querySnapshot.empty) {
           const studentData = querySnapshot.docs[0].data();
           setStudentData(studentData);
+          setAvatar(studentData.department.charAt(0).toUpperCase())
         } else {
           console.log("No matching documents found!");
         }
@@ -33,6 +41,7 @@ const StudentCard = (props) => {
     };
 
     fetchStudentData();
+  }
   }, [currentUser.email, studentCollection]);
 
   return (
@@ -51,8 +60,7 @@ const StudentCard = (props) => {
             {studentData && studentData.name}
           </p>
           <p className="text-sm italic">
-            {studentData &&
-              `${studentData.department.toUpperCase()}, ${studentData.level}L`}
+            {studentData && avatar}
           </p>
         </div>
       </section>
