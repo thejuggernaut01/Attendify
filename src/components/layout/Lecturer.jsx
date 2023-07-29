@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Navbar from '../layout/Navbar';
 import StudentCard from '../UI/StudentCard';
-import { FiPlus, FiLoader, FiX } from 'react-icons/fi'; // Importing icons from React Icons library
+import {  FiLoader, FiX } from 'react-icons/fi'; // Importing icons from React Icons library
 import CourseCard from '../UI/CourseCard';
 import { db } from '../../firebase';
 import { collection, addDoc, getDocs } from 'firebase/firestore';
@@ -45,6 +45,7 @@ function Lecturer() {
     try {
       await saveDataToFirestore(dataToSave);
       setIsLoading(false); // Hide loading icon on successful form submit
+      setShowAddForm(false)
     } catch (error) {
       console.error('Error saving data:', error);
       setIsLoading(false); // Hide loading icon on error
