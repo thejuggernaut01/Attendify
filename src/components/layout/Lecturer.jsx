@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import Navbar from "../layout/Navbar";
-import AddIcon from "../../icons/icon_addicon.svg";
+// import StudentCard from "../UI/StudentCard";
+import { FiLoader, FiX } from "react-icons/fi"; // Importing icons from React Icons library
 import CourseCard from "../UI/CourseCard";
 import { db } from "../../firebase";
 import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
 import LectuerCard from "../UI/LecturerCard";
+import AddIcon from "../../icons/icon_addicon.svg";
 import { AuthContext } from "../../store/AuthContext";
 
 function Lecturer() {
@@ -15,6 +17,8 @@ function Lecturer() {
   const [lecturerName, setLecturerName] = useState("");
   const [showAddForm, setShowAddForm] = useState(false); // State variable for form visibility
   const [coursesData, setCoursesData] = useState([]); // State variable for storing course data
+  const [isLoading, setIsLoading] = useState(false); // State variable for loading state
+  const formRef = useRef(null); // Ref to the form element
   const { currentUser } = useContext(AuthContext);
   const coursesRef = collection(db, "courseCollection");
 
@@ -32,8 +36,9 @@ function Lecturer() {
     fetchCoursesData();
   }, []);
 
-  const handleFormSubmit = (event) => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
+    setIsLoading(true); // Show loading icon on form submit
 
     const dataToSave = {
       classRepMail,
@@ -44,25 +49,40 @@ function Lecturer() {
       lecturerEmail: currentUser.email,
     };
 
-    saveDataToFirestore(dataToSave);
+    try {
+      await saveDataToFirestore(dataToSave);
+      setIsLoading(false); // Hide loading icon on successful form submit
+      setShowAddForm(false);
+    } catch (error) {
+      console.error("Error saving data:", error);
+      setIsLoading(false); // Hide loading icon on error
+    }
   };
 
   const saveDataToFirestore = (data) => {
-    addDoc(collection(db, "courseCollection"), data)
-      .then(() => {
-        console.log("Data successfully saved to Firestore!");
-        setShowAddForm(false);
-        // Trigger data fetching again to reload Course Cards
-        fetchCoursesData();
-      })
-      .catch((error) => {
-        console.error("Error saving data:", error);
-      });
+    return addDoc(collection(db, "courseCollection"), data);
   };
 
   const handleButtonClick = () => {
     setShowAddForm(true); // Show the form on button click
   };
+
+  // Function to handle clicks outside of the form
+  const handleClickOutside = (event) => {
+    if (formRef.current && !formRef.current.contains(event.target)) {
+      setShowAddForm(false);
+    }
+  };
+
+  useEffect(() => {
+    // Attach event listener to handle clicks outside of the form
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      // Clean up the event listener when the component unmounts
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="bg-gray-100 h-full pb-16">
@@ -73,7 +93,7 @@ function Lecturer() {
         <div className="text-center bg-white rounded-2xl py-6 w-[90%] sm:w-[70%] mx-auto">
           <div className="flex justify-center">
             <button className="text-green-500" onClick={handleButtonClick}>
-              <img className="w-14" src={AddIcon} alt="Add Course" />
+              <img src={AddIcon} alt="Add Course" />
             </button>
           </div>
           <p className="mt-2" onClick={handleButtonClick}>
@@ -95,54 +115,86 @@ function Lecturer() {
 
       {/* Conditional rendering of the add course form */}
       {showAddForm && (
-        <div className="fixed top-10 left-1/2 transform -translate-x-1/2 w-[90%] max-w-md bg-white py-4 px-6 border-b-2 border-gray-300 rounded-md shadow-lg">
-          <p className="text-lg text-center p-2">Add Course</p>
-          <form onSubmit={handleFormSubmit} className="grid grid-cols-1 gap-4">
-            <input
-              type="text"
-              className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="Course Title"
-              value={courseTitle}
-              onChange={(e) => setCourseTitle(e.target.value)}
-            />
-            <input
-              type="text"
-              className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="Course Code"
-              value={courseCode}
-              onChange={(e) => setCourseCode(e.target.value)}
-            />
-            <input
-              type="number"
-              className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="Course Unit"
-              value={courseUnit}
-              onChange={(e) => setCourseUnit(e.target.value)}
-            />
-            <input
-              type="text"
-              className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="Lecturer Name"
-              value={lecturerName}
-              onChange={(e) => setLecturerName(e.target.value)}
-            />
-            <input
-              type="email"
-              className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="Class Rep Mail"
-              value={classRepMail}
-              onChange={(e) => setClassRepMail(e.target.value)}
-            />
-
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              >
-                Add
-              </button>
+        <div
+          className="fixed top-10 left-1/2 transform -translate-x-1/2 w-[90%] max-w-md bg-white py-4 px-6 border-b-2 border-gray-300 rounded-md shadow-lg"
+          ref={formRef}
+        >
+          {isLoading ? ( // Show loading icon when the form is submitting
+            <div className="flex justify-center">
+              <FiLoader className="text-green-500 animate-spin" size={24} />
             </div>
-          </form>
+          ) : (
+            <>
+              <p className="text-lg text-center p-2">Add Course</p>
+              {/* Exit button 
+               <div className='inline-flex'>
+               <button
+                 onClick={() => setShowAddForm(false)}
+                 className='text-gray-500 hover:text-gray-700 focus:outline-none'
+               >
+                 <FiX size={24} />
+               </button>
+             </div>*/}
+              <form
+                onSubmit={handleFormSubmit}
+                className="grid grid-cols-1 gap-4"
+              >
+                <input
+                  type="text"
+                  className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Course Title"
+                  value={courseTitle}
+                  onChange={(e) => setCourseTitle(e.target.value)}
+                  required
+                />
+
+                <input
+                  type="text"
+                  className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Course Code"
+                  value={courseCode}
+                  onChange={(e) => setCourseCode(e.target.value)}
+                  required
+                />
+
+                <input
+                  type="number"
+                  className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Course Unit"
+                  value={courseUnit}
+                  onChange={(e) => setCourseUnit(e.target.value)}
+                  required
+                />
+
+                <input
+                  type="text"
+                  className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Lecturer Name"
+                  value={lecturerName}
+                  onChange={(e) => setLecturerName(e.target.value)}
+                  required
+                />
+
+                <input
+                  type="email"
+                  className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Class Rep Mail"
+                  value={classRepMail}
+                  onChange={(e) => setClassRepMail(e.target.value)}
+                  required
+                />
+
+                <div className="flex justify-end">
+                  <button
+                    type="submit"
+                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                  >
+                    Add
+                  </button>
+                </div>
+              </form>
+            </>
+          )}
         </div>
       )}
     </div>
