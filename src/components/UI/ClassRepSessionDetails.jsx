@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { AuthContext } from "../../store/AuthContext";
 import { qrCode } from "./Svg";
 
-const SessionDetails = () => {
+const ClassRepSessionDetails = ({ data }) => {
   const {
     showSessionDetails,
     setShowSessionDetails,
@@ -16,6 +16,8 @@ const SessionDetails = () => {
     setStartSession((prevState) => !prevState);
     setShowCode((prevState) => !prevState);
   };
+
+  // console.log(data);
 
   return (
     <>
@@ -35,8 +37,15 @@ const SessionDetails = () => {
               <option className="text-left" value="">
                 Choose Course
               </option>
-              <option value="course">CSC 416</option>
-              <option value="course">CSC 402</option>
+              {data.map((data) => (
+                <option
+                  className="text-left"
+                  key={data.courseCode}
+                  value={data.courseCode}
+                >
+                  {data.courseCode}
+                </option>
+              ))}
             </select>
 
             <button className="text-[#b7b7b7] mt-5 px-[5.3rem] py-2 border border-white rounded-full appearance-none outline-white text-left bg-black">
@@ -71,4 +80,4 @@ const SessionDetails = () => {
   );
 };
 
-export default SessionDetails;
+export default ClassRepSessionDetails;

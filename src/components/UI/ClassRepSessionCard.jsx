@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { powerSvg } from "./Svg";
 import { AuthContext } from "../../store/AuthContext";
 
-const SessionCard = () => {
+const ClassRepSessionCard = () => {
   const { startSession, setStartSession, setShowSessionDetails, setShowCode } =
     useContext(AuthContext);
 
@@ -41,4 +41,4 @@ const SessionCard = () => {
   );
 };
 
-export default SessionCard;
+export default ClassRepSessionCard;

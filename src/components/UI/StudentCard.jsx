@@ -2,12 +2,12 @@ import { useState, useEffect, useContext } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { AuthContext } from "../../store/AuthContext";
 import { db } from "../../firebase";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 
 const StudentCard = (props) => {
   const [studentData, setStudentData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [avatar, setAvatar] = useState("")
+  const [avatar, setAvatar] = useState("");
   const { currentUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -15,38 +15,38 @@ const StudentCard = (props) => {
 
   useEffect(() => {
     if (!currentUser) {
-      // Step 2: Red irect if the user is not logged in
+      // Step 2: Redirect if the user is not logged in
       navigate("/home");
-    }else{
-    const fetchStudentData = async () => {
-      try {
-        setLoading(true);
-        const studentsQuery = query(
-          studentCollection,
-          where("email", "==", currentUser.email)
-        );
-        const querySnapshot = await getDocs(studentsQuery);
+    } else {
+      const fetchStudentData = async () => {
+        try {
+          setLoading(true);
+          const studentsQuery = query(
+            studentCollection,
+            where("email", "==", currentUser.email)
+          );
+          const querySnapshot = await getDocs(studentsQuery);
 
-        if (!querySnapshot.empty) {
-          const studentData = querySnapshot.docs[0].data();
-          setStudentData(studentData);
-          setAvatar(studentData.department.charAt(0).toUpperCase())
-        } else {
-          console.log("No matching documents found!");
+          if (!querySnapshot.empty) {
+            const studentData = querySnapshot.docs[0].data();
+            setStudentData(studentData);
+            setAvatar(studentData.department.toUpperCase());
+          } else {
+            console.log("No matching documents found!");
+          }
+        } catch (error) {
+          console.log(error.message);
         }
-      } catch (error) {
-        console.log(error.message);
-      }
-      setLoading(false);
-    };
+        setLoading(false);
+      };
 
-    fetchStudentData();
-  }
-  }, [currentUser.email, studentCollection]);
+      fetchStudentData();
+    }
+  }, [currentUser, studentCollection]);
 
   return (
     <>
-      <section className="mt-10">
+      <section className="">
         <div className="text-center bg-white rounded-2xl py-6 w-[90%] sm:w-[70%] mx-auto">
           <div className="inline-block text-white p-14 rounded-[50%] bg-blue-500 relative">
             <h2
@@ -59,9 +59,7 @@ const StudentCard = (props) => {
           <p className="text-lg font-semibold">
             {studentData && studentData.name}
           </p>
-          <p className="text-sm italic">
-            {studentData && avatar}
-          </p>
+          <p className="text-sm italic">{studentData && avatar}</p>
         </div>
       </section>
     </>
