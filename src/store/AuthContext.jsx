@@ -11,9 +11,10 @@ import { auth } from "../firebase";
 export const AuthContext = React.createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState("");
+  const [currentUser, setCurrentUser] = useState(null); 
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+
   const [startSession, setStartSession] = useState(false);
   const [showSessionDetails, setShowSessionDetails] = useState(false);
   const [showCode, setShowCode] = useState(false);
@@ -25,7 +26,7 @@ export const AuthProvider = ({ children }) => {
     });
 
     return subscribe;
-  });
+  }, []);
 
   const signUp = async (email, password) => {
     await createUserWithEmailAndPassword(auth, email, password);

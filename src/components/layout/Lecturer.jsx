@@ -53,6 +53,7 @@ function Lecturer() {
       await saveDataToFirestore(dataToSave);
       setIsLoading(false); // Hide loading icon on successful form submit
       setShowAddForm(false);
+      fetchCoursesData()
     } catch (error) {
       console.error("Error saving data:", error);
       setIsLoading(false); // Hide loading icon on error
