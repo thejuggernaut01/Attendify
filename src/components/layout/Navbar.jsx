@@ -1,7 +1,7 @@
 import { bars } from "../UI/Svg";
 import { attendifyLogo } from "../UI/Svg";
 
-const Navbar = () => {
+const Navbar = ({logout}) => {
   return (
     <>
       <div className="flex justify-around items-center pt-7 pb-4 bg-white">
@@ -9,8 +9,8 @@ const Navbar = () => {
           {attendifyLogo}
         </div>
         <h1 className="text-xl">Attendify</h1>
-        <div className="bg-black border border-black rounded-full p-2 text-white cursor-pointer">
-          {bars}
+        <div onClick={logout} className="bg-red-500 border rounded-full p-2 text-white cursor-pointer">
+          <p className="text-sm">Log out</p>
         </div>
       </div>
     </>

@@ -21,7 +21,7 @@ function Lecturer() {
   const formRef = useRef(null); // Ref to the form element
   const { currentUser } = useContext(AuthContext);
   const coursesRef = collection(db, "courseCollection");
-
+  
   const fetchCoursesData = async () => {
     const email = currentUser && currentUser.email;
 
@@ -53,7 +53,7 @@ function Lecturer() {
       await saveDataToFirestore(dataToSave);
       setIsLoading(false); // Hide loading icon on successful form submit
       setShowAddForm(false);
-      fetchCoursesData()
+      fetchCoursesData();
     } catch (error) {
       console.error("Error saving data:", error);
       setIsLoading(false); // Hide loading icon on error
@@ -85,9 +85,22 @@ function Lecturer() {
     };
   }, []);
 
+
+
+  // Logout User
+  const { logout } = useContext(AuthContext);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Error logging out:", error.message);
+    }
+  };
+
   return (
     <div className="bg-gray-100 h-full pb-16">
-      <Navbar />
+      <Navbar logout={handleLogout} />
 
       <LectuerCard />
       <section className="mt-5">
