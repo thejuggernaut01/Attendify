@@ -9,9 +9,8 @@ import { QrReader } from "react-qr-reader";
 const ClassRepSessionCard = () => {
   const { startSession, setStartSession, setShowSessionDetails, setShowCode } = useContext(AuthContext);
   const [isScanning, setIsScanning] = useState(false);
-  const [qrData, setQrData] = useState("");
   const [delay, setDelay] = useState(100);
-  const [result, setResult] = useState("No Result"); // Fixed state initialization for 'result'
+  const [result, setResult] = useState("No Result");
 
   const startSessionHandler = () => {
     setShowSessionDetails((prevState) => !prevState);
@@ -25,7 +24,8 @@ const ClassRepSessionCard = () => {
   const handleScan = async (data) => {
     if (data) {
       // Barcode/QR code data is available in 'data'
-      setResult(data); // Storing the scanned data in 'result' state
+      setResult(data); // Store the scanned data in 'result' state
+      setIsScanning(false); // Stop scanning
       await saveAttendance(data); // Save the scanned data to Firestore
     }
   };
@@ -36,7 +36,7 @@ const ClassRepSessionCard = () => {
 
   const toggleScanner = () => {
     setIsScanning((prev) => !prev);
-    // Removed the line setting 'qrData' to an empty string to keep the scanned data
+    setResult("No Result"); // Clear the previous scanned data when starting a new scan
   };
 
   // Save attendance
@@ -99,7 +99,7 @@ const ClassRepSessionCard = () => {
                 onError={handleError}
                 onScan={handleScan}
               />
-              <p>{result}</p> {/* Display the scanned data from 'result' state */}
+              {result !== "No Result" && <p>{result}</p>} {/* Display the scanned data from 'result' state */}
             </div>
           )}
         </div>
