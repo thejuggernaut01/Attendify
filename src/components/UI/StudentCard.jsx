@@ -4,7 +4,7 @@ import { AuthContext } from "../../store/AuthContext";
 import { db } from "../../firebase";
 import { useNavigate } from "react-router-dom";
 
-const StudentCard = (props) => {
+const StudentCard = () => {
   const [studentData, setStudentData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [avatar, setAvatar] = useState("");
