@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { useContext } from "react";
 import { powerSvg } from "./Svg";
+import { db } from "../../firebase";
+import { collection, addDoc } from "firebase/firestore";
 import { AuthContext } from "../../store/AuthContext";
-import {QrReader} from "react-qr-reader";
+import { QrReader } from "react-qr-reader";
 
 const ClassRepSessionCard = () => {
-  const { startSession, setStartSession, setShowSessionDetails, setShowCode } =
-    useContext(AuthContext);
+  const { startSession, setStartSession, setShowSessionDetails, setShowCode } = useContext(AuthContext);
   const [isScanning, setIsScanning] = useState(false);
   const [qrData, setQrData] = useState("");
+  const [delay, setDelay] = useState(100);
+  const [result, setResult] = useState("No Result"); // Fixed state initialization for 'result'
 
   const startSessionHandler = () => {
     setShowSessionDetails((prevState) => !prevState);
@@ -19,21 +22,45 @@ const ClassRepSessionCard = () => {
     setShowCode((prevState) => !prevState);
   };
 
-  const handleScan = (data) => {
+  const handleScan = async (data) => {
     if (data) {
       // Barcode/QR code data is available in 'data'
-      setQrData(data);
-      setIsScanning(false);
+      setResult(data); // Storing the scanned data in 'result' state
+      await saveAttendance(data); // Save the scanned data to Firestore
     }
   };
 
   const handleError = (err) => {
     console.error(err);
-    setIsScanning(false);
   };
 
   const toggleScanner = () => {
     setIsScanning((prev) => !prev);
+    // Removed the line setting 'qrData' to an empty string to keep the scanned data
+  };
+
+  // Save attendance
+  const saveAttendance = async (data) => {
+    const dataToSave = {
+      qrData: data,
+      timestamp: new Date().toISOString(), // You can include a timestamp if needed
+    };
+
+    try {
+      await saveDataToFirestore(dataToSave);
+      console.log("Data saved:", dataToSave);
+    } catch (error) {
+      console.error("Error saving data:", error);
+    }
+  };
+
+  const saveDataToFirestore = (data) => {
+    return addDoc(collection(db, "attendanceCollection"), data);
+  };
+
+  const previewStyle = {
+    height: 240,
+    width: 320,
   };
 
   return (
@@ -67,12 +94,12 @@ const ClassRepSessionCard = () => {
           {isScanning && (
             <div>
               <QrReader
-                delay={300}
+                delay={delay}
+                style={previewStyle}
                 onError={handleError}
                 onScan={handleScan}
-                style={{ width: "100%" }}
               />
-              <p>{qrData}</p>
+              <p>{result}</p> {/* Display the scanned data from 'result' state */}
             </div>
           )}
         </div>
