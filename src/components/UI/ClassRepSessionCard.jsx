@@ -17,7 +17,6 @@ const ClassRepSessionCard = () => {
     setShowCode((prevState) => !prevState);
   };
 
-
   return (
     <>
       <section className="mt-5">
@@ -46,4 +45,4 @@ const ClassRepSessionCard = () => {
   );
 };
 
-export default ClassRepSessionCard;
+export default ClassRepSessionCard
