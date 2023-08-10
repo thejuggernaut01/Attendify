@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 import DeleteIcon from "../../icons/icon_delete.svg";
 
 function CourseCard(props) {
@@ -14,9 +16,11 @@ function CourseCard(props) {
         </div>
 
         <div>
-          <button className="text-xs text-white p-2 rounded-full bg-green-500">
-            Check Attendance
-          </button>
+          <Link to={`/lecturer/${props.courseCode}`}>
+            <button className="text-xs text-white p-2 rounded-full bg-green-500">
+              Check Attendance
+            </button>
+          </Link>
           <p className="text-xs text-right mt-2 mr-6">{props.courseUnits}</p>
         </div>
       </div>

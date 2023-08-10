@@ -1,26 +1,37 @@
 import "./App.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AuthProvider } from "./store/AuthContext";
-import LogoWhite from './icons/icon_calendar.png'
-import LogoBlue from './icons/icon_calendar_blue.png'
+import LogoWhite from "./icons/icon_calendar.png";
+import LogoBlue from "./icons/icon_calendar_blue.png";
 import RootRoute from "./pages/RootRoute";
 import Homepage from "./components/layout/Homepage";
 import StudentRoute from "./pages/StudentRoute";
 import Session from "./pages/Session";
 import Splashscreen from "./components/layout/Splashscreen";
 import Lecturer from "./components/layout/Lecturer";
+import AttendancePage from "./pages/AttendancePage";
 
 function App() {
   const router = createBrowserRouter([
     {
       path: "",
       element: <RootRoute />,
-      children: [{ index: true, element: <Splashscreen logoBlue={LogoBlue} logoWhite={LogoWhite} /> }],
+      children: [
+        {
+          index: true,
+          element: <Splashscreen logoBlue={LogoBlue} logoWhite={LogoWhite} />,
+        },
+      ],
     },
     {
       path: "home",
       element: <RootRoute />,
-      children: [{ index: true, element: <Homepage logoWhite={LogoWhite} logoBlue={LogoBlue} /> }],
+      children: [
+        {
+          index: true,
+          element: <Homepage logoWhite={LogoWhite} logoBlue={LogoBlue} />,
+        },
+      ],
     },
     {
       path: "student",
@@ -34,7 +45,7 @@ function App() {
     },
     {
       path: "lecturer",
-      element: <Lecturer/>,
+      element: <Lecturer />,
       children: [
         {
           index: true,
@@ -42,6 +53,7 @@ function App() {
         },
       ],
     },
+    { path: "lecturer/:course", element: <AttendancePage /> },
   ]);
 
   return (

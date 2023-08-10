@@ -1,7 +1,12 @@
-import { bars } from "../UI/Svg";
+import { useContext } from "react";
+import { AuthContext } from "../../store/AuthContext";
 import { attendifyLogo } from "../UI/Svg";
 
-const Navbar = ({logout}) => {
+import { Link } from "react-router-dom";
+
+const Navbar = () => {
+  const { logout } = useContext(AuthContext);
+
   return (
     <>
       <div className="flex justify-around items-center pt-7 pb-4 bg-white">
@@ -9,9 +14,14 @@ const Navbar = ({logout}) => {
           {attendifyLogo}
         </div>
         <h1 className="text-xl">Attendify</h1>
-        <div onClick={logout} className="bg-red-500 border rounded-full p-2 text-white cursor-pointer">
-          <p className="text-sm">Log out</p>
-        </div>
+        <Link to="/home">
+          <div
+            onClick={logout}
+            className="bg-red-500 border rounded-full p-2 text-white cursor-pointer"
+          >
+            <p className="text-sm">Log out</p>
+          </div>
+        </Link>
       </div>
     </>
   );
