@@ -20,7 +20,7 @@ function NavbarHome(props) {
   };
 
   return (
-    <div className="flex justify-around space-x-16 p-6">
+    <div className="flex m-auto justify-around space-x-10 p-6">
       <div className="cursor-pointer flex space-x-2" onClick={scrollToContent}>
         <img src={props.logoBlue} alt="Logo" />
         <p>Attendify</p>
@@ -28,8 +28,7 @@ function NavbarHome(props) {
 
       <div className="flex space-x-10">
         <p className="cursor-pointer" onClick={scrollToContent}>Login</p>
-        <p className="cursor-pointer" onClick={scrollToContent}>Register</p>
-        <p onClick={navigateToScanPage} className="cursor-pointer">Identify Student</p>
+        <p onClick={navigateToScanPage} className="cursor-pointer">Identify</p>
       </div>
     </div>
   );
