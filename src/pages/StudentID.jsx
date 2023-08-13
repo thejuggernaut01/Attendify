@@ -49,7 +49,7 @@ const StudentID = () => {
 
   return (
     <>
-      <section className="flex justify-center items-center h-[50vh]">
+      <section className="flex justify-center items-center ">
         <button
           onClick={showBarcodeHandler}
           className="mt-5 font-semibold text-lg cursor-pointer border rounded-lg inline-block px-5 py-2 bg-blue-500 text-white"
@@ -59,7 +59,7 @@ const StudentID = () => {
       </section>
 
       <aside className="mt-6">
-        <div className="flex justify-center items-center flex-col bg-white rounded-2xl py-6 w-[90%] sm:w-[70%] h-80 mx-auto">
+        <div className="flex mt-8 justify-center items-center flex-col bg-white rounded-2xl py-6 w-[90%] sm:w-[70%] h-80 mx-auto">
           {showBarcode ? <QRCode value={JSON.stringify(QRData)} /> : null}
         </div>
       </aside>

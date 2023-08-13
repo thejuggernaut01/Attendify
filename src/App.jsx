@@ -12,6 +12,7 @@ import Lecturer from "./components/layout/Lecturer";
 import AttendancePage from "./pages/AttendancePage";
 import StudentID from "./pages/StudentID";
 import NotFoundPage from "./pages/NotFoundPage";
+import ScanPage from "./components/layout/ScanPage";
 
 function App() {
   const router = createBrowserRouter([
@@ -33,6 +34,16 @@ function App() {
         {
           index: true,
           element: <Homepage logoWhite={LogoWhite} logoBlue={LogoBlue} />,
+        },
+      ],
+    },
+    {
+      path: "scan",
+      element: <RootRoute />,
+      children: [
+        {
+          index: true,
+          element: <ScanPage/>,
         },
       ],
     },
