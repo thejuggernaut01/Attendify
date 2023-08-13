@@ -1,5 +1,5 @@
 import NavbarHome from "./NavbarHome";
-import IconHome from "../../icons/icon_hme.svg";
+import IconHome from "../../icons/iconhome.svg";
 import AuthUI from "./AuthUI";
 
 const Homepage = (props) => {
