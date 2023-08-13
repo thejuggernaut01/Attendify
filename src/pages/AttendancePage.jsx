@@ -35,7 +35,7 @@ const AttendancePage = () => {
   const searchByDateHandler = () => {
     const matchDate = data.filter((data) => {
       const studentDate = data.timestamp.split("T")[0];
-      const searchDate = searchByDate && searchByDate.current.value;
+      const searchDate = searchByDate.current && searchByDate.current.value;
       return searchDate === studentDate;
     });
     console.log(matchDate);
@@ -138,7 +138,7 @@ const AttendancePage = () => {
             ) : (
               <p className="text-center xs:text-xl sm:text-2xl font-semibold">
                 No attendance was recorded for {params.course} on{" "}
-                {searchByDate && searchByDate.current.value}.
+                {searchByDate.current && searchByDate.current.value}.
               </p>
             )}
           </div>

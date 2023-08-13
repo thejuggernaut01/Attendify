@@ -10,6 +10,8 @@ import Session from "./pages/Session";
 import Splashscreen from "./components/layout/Splashscreen";
 import Lecturer from "./components/layout/Lecturer";
 import AttendancePage from "./pages/AttendancePage";
+import StudentID from "./pages/StudentID";
+import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
   const router = createBrowserRouter([
@@ -22,6 +24,7 @@ function App() {
           element: <Splashscreen logoBlue={LogoBlue} logoWhite={LogoWhite} />,
         },
       ],
+      errorElement: <NotFoundPage />,
     },
     {
       path: "home",
@@ -41,6 +44,7 @@ function App() {
           index: true,
           element: <Session />,
         },
+        { path: "id", element: <StudentID /> },
       ],
     },
     {

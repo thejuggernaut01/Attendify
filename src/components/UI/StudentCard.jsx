@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { AuthContext } from "../../store/AuthContext";
 import { db } from "../../firebase";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const StudentCard = () => {
   const [studentData, setStudentData] = useState([]);
@@ -60,6 +60,12 @@ const StudentCard = () => {
             {studentData && studentData.name}
           </p>
           <p className="text-sm italic">{studentData && avatar}</p>
+
+          <Link to={"id"}>
+            <button className="mt-5 font-semibold text-lg cursor-pointer border rounded-lg inline-block px-5 py-2 bg-blue-500 text-white">
+              Student ID
+            </button>
+          </Link>
         </div>
       </section>
     </>
