@@ -28,54 +28,54 @@ function Auth(props) {
     }
   };
 
+  const getToggleClasses = (isElementActive) => 
+    isElementActive 
+      ? "mt-2 bg-cyan-400 h-[3px] rounded-full m-auto w-32 transition-all duration-300"
+      : "mt-2 bg-gray-700 h-[3px] rounded-full m-auto w-32 transition-all duration-300";
+
+
   return (
-    <div className="justify-center bg-gradient-to-r w-screen from-[#020443] to-[#02030C] h-[150vh]">
-      <img className="m-auto pt-8" src={props.logo} alt="" />
+    <div className="w-full min-h-screen pt-8 pb-16 flex flex-col items-center">
+      {/* This image is likely too large, suggesting a height limit */}
+      <img className="pt-8 h-12 w-auto" src={props.logo} alt="" />
 
-      <div className="flex justify-around mt-2 cursor-pointer text-white">
-        <div onClick={handleLecturerClick} className="items-center text-center">
-          <p>Lecturer {registered ? "Login" : "Register"}</p>
+      {/* Auth Card Container */}
+      <div className="mt-8 p-8 max-w-sm md:max-w-md w-full 
+                      rounded-2xl bg-gray-900 
+                      shadow-2xl shadow-cyan-900/20 
+                      border border-gray-800/50">
+
+        {/* TABS */}
+        <div className="flex justify-around cursor-pointer text-gray-100">
+          <div onClick={handleLecturerClick} className="items-center text-center">
+            <p className="text-lg font-semibold">{`Lecturer ${registered ? "Login" : "Register"}`}</p>
+            <div className={getToggleClasses(!isStudent)}></div>
+          </div>
+
           <div
-            className={
-              isStudent
-                ? "mt-2 bg-white h-[3px] rounded-full m-auto w-32"
-                : "mt-2 bg-blue-800 h-[3px] rounded-full m-auto w-32"
-            }
-          ></div>
+            onClick={handleStudentClick}
+            className="items-center text-center cursor-pointer"
+          >
+            <p className="text-lg font-semibold">{`Student ${registered ? "Login" : "Register"}`}</p>
+            <div className={getToggleClasses(isStudent)}></div>
+          </div>
         </div>
 
-        <div
-          onClick={handleStudentClick}
-          className="items-center text-center cursor-pointer"
-        >
-          <p>Student {registered ? "Login" : "Register"}</p>
-          <div
-            className={
-              isStudent
-                ? "mt-2 bg-blue-800 h-[3px] rounded-full m-auto w-32"
-                : "mt-2 bg-white h-[3px] rounded-full m-auto w-32"
-            }
-          ></div>
+        {/* FORM RENDER (Assuming internal forms use dark mode styles) */}
+        <div className="mt-8">
+            {renderForm()}
         </div>
-      </div>
 
-      {renderForm()}
-
-      {registered ? (
-        <p
-          onClick={changeSession}
-          className="w-48 m-auto cursor-pointer text-center text-gray-500 mt-8"
-        >
-          Create new account
-        </p>
-      ) : (
-        <p
-          onClick={changeSession}
-          className="w-56 m-auto cursor-pointer text-center text-gray-500 mt-8"
-        >
-          Already have an account?
-        </p>
-      )}
+      </div> {/* END Auth Card Container */}
+      
+      {/* Change Session Link */}
+      <p
+        onClick={changeSession}
+        className="mt-8 cursor-pointer text-gray-400 hover:text-cyan-400 font-medium transition-colors"
+      >
+        {registered ? "Create new account" : "Already have an account?"}
+      </p>
+      
     </div>
   );
 }

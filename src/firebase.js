@@ -5,12 +5,13 @@ import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBvhSbEGYmR1AuTQCIMPDiiOXRZnEM09V4",
-  authDomain: "attendify-web-app.firebaseapp.com",
-  projectId: "attendify-web-app",
-  storageBucket: "attendify-web-app.appspot.com",
-  messagingSenderId: "160515846006",
-  appId: "1:160515846006:web:d4f8fd55bc15439cfc1457"
+  apiKey: "AIzaSyDsOzzMY6jGoZ0Bh2_XBOpZx9XTigMU7U4",
+  authDomain: "hifoodsapp.firebaseapp.com",
+  databaseURL: "https://hifoodsapp-default-rtdb.firebaseio.com",
+  projectId: "hifoodsapp",
+  storageBucket: "hifoodsapp.firebasestorage.app",
+  messagingSenderId: "950825648489",
+  appId: "1:950825648489:web:660353e9b71a3626aafdf8"
 };
 
 // Initialize Firebase

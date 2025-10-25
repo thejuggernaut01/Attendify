@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
-import { FaSpinner } from 'react-icons/fa'; // Import the desired spinner icon from react-icons
+import { FiLoader } from 'react-icons/fi'; // Using FiLoader for a sleeker, modern spinner
 
 function Splashscreen(props) {
   const [isLoading, setIsLoading] = useState(true);
@@ -17,17 +17,43 @@ function Splashscreen(props) {
   return (
     <>
       {isLoading ? (
-        <div className='flex flex-col items-center 
-                      justify-center bg-gradient-to-r 
-                      w-screen from-[#020443] 
-                      to-[#02030C] 
-                      h-screen space-y-4'
+        <div 
+          className='flex flex-col items-center justify-center 
+                     min-h-screen min-w-full 
+                     bg-gray-950 space-y-8 
+                     text-white' // Use deep dark background and base text color
         >
-          <div className="flex items-center space-x-2">
-            <img src={props.logoWhite} alt="Logo" className="w-8 h-8" /> {/* Adjust the width and height as needed */}
-            <p className="text-white text-xl">Attendify</p>
+          {/* Brand Identity */}
+          <div className="flex flex-col items-center space-y-4">
+            
+            {/* Logo */}
+            <div className="p-2 border-4 border-cyan-500/50 rounded-full animate-pulse-slow">
+                <img 
+                    src={props.logoWhite} 
+                    alt="Attendify Logo" 
+                    className="w-10 h-10 object-contain text-cyan-400" // Increased size
+                /> 
+            </div>
+            
+            {/* Brand Name */}
+            <p 
+              className="text-3xl font-extrabold tracking-widest 
+                         bg-gradient-to-r 
+                         from-cyan-400 to-blue-500 
+                         text-transparent 
+                         bg-clip-text" // Electric Gradient text
+            >
+              ATTENDIFY
+            </p>
           </div>
-          <FaSpinner className='text-white text-4xl animate-spin' /> {/* Use the spinner icon */}
+          
+          {/* Modern Loader */}
+          {/* FiLoader is sleeker than FaSpinner. Use 'animate-spin' for rotation. */}
+          <FiLoader 
+            className='text-cyan-500 text-5xl animate-spin 
+                       shadow-xl shadow-cyan-900/50' // Add shadow for glow effect
+            aria-label="Loading application"
+          />
         </div>
       ) : (
         <Navigate to="/home" />

@@ -25,45 +25,50 @@ function LecturerSignUp() {
 
   const lecturerSignUpData = [
     {
-      placeholder: "Enter Full Name",
+      placeholder: "Full Name", // Simplified placeholder
       value: lecturer_full_name,
       type: "text",
       stateManager: set_lecturer_full_name,
+      name: "fullName",
     },
     {
-      placeholder: "Enter Department",
+      placeholder: "Department", // Simplified placeholder
       value: lectuer_department,
       type: "text",
       stateManager: set_lecturer_department,
+      name: "department",
     },
     {
-      placeholder: "Enter Email",
+      placeholder: "Email Address", // More descriptive
       value: lecturer_email,
       type: "email",
       stateManager: set_lecturer_email,
+      name: "email",
     },
     {
-      placeholder: "Enter Phone Number",
+      placeholder: "Phone Number",
       value: lecturer_phone_number,
-      type: "number",
+      type: "tel", // Use 'tel' type for better mobile support
       stateManager: set_lecturer_phone_number,
+      name: "phoneNumber",
     },
     {
-      placeholder: "Enter Password",
+      placeholder: "Password",
       value: lecturer_password,
       type: "password",
       stateManager: set_lecturer_password,
+      name: "password",
     },
     {
       placeholder: "Verify Password",
       value: lecturer_re_password,
       type: "password",
       stateManager: set_lecturer_repassword,
+      name: "verifyPassword",
     },
   ];
 
   const resetAllFields = () => {
-    // Iterate through the lecturerLoginData array and reset each state to empty
     lecturerSignUpData.forEach((data) => {
       data.stateManager("");
     });
@@ -81,12 +86,18 @@ function LecturerSignUp() {
     }
 
     if (lecturer_password !== lecturer_re_password) {
-      setError("Password does not match");
+      setError("Passwords do not match");
       setLoading(false);
       return;
     }
-    setLoading(false)
     
+    // Check if any field is empty (basic validation)
+    const isAnyFieldEmpty = lecturerSignUpData.some(data => !data.value.trim());
+    if (isAnyFieldEmpty) {
+        setError("Please fill in all fields.");
+        setLoading(false);
+        return;
+    }
 
     try {
       await signUp(lecturer_email, lecturer_password);
@@ -99,44 +110,76 @@ function LecturerSignUp() {
       });
 
       navigate("/lecturer");
+      resetAllFields();
     } catch (error) {
       console.log(error.message);
       if (error.message.includes("weak-password")) {
-        setError("Password should be at least 6 characters ");
+        setError("Password should be at least 6 characters.");
+      } else if (error.message.includes("email-already-in-use")) {
+        setError("This email is already registered.");
       } else {
-        setError("An unexpected error occurred");
+        setError("An unexpected error occurred. Please try again.");
       }
+      setLoading(false); // Make sure to set loading to false on error
     }
-    setLoading(false);
-    resetAllFields();
   };
 
   return (
-    <div className="mt-14">
-      {error && <p className="text-red-600 text-center">{error}</p>}
+    <div className="mt-8"> {/* Adjusted margin for better spacing within AuthUI card */}
+      
+      {/* Error Message - Use stark red for visibility */}
+      {error && (
+        <p 
+          className="text-red-500 text-sm font-medium text-center mb-6 p-2 rounded bg-red-900/30 border border-red-900 mx-auto max-w-sm"
+          role="alert" // Accessibility
+        >
+          {error}
+        </p>
+      )}
+      
       <form
         onSubmit={lecturerSignUp}
-        className="text-center pt-8 text-white space-x-4 space-y-8 m-auto"
+        className="text-center text-white space-y-4" // Use space-y for vertical rhythm
       >
-        <div className="w-full md:w-1/2 p-2 space-y-8 w-100 m-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> {/* Responsive Grid Layout */}
           {lecturerSignUpData.map((data, index) => (
             <input
               key={index}
               type={data.type}
-              name={data.value}
+              name={data.name} // HTML5 addition
+              id={`lecturer-signup-${data.name}`} // HTML5 addition
               placeholder={data.placeholder}
               value={data.value}
               onChange={(e) => {
                 data.stateManager(e.target.value);
               }}
-              className="bg-transparent border mx-2  rounded-full p-4 pl-6 w-72"
+              // Sleek, dark input field with cyan focus
+              className="bg-gray-800/60 
+                         border border-gray-700 
+                         rounded-lg p-3 w-full 
+                         text-gray-200 placeholder-gray-500
+                         focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400
+                         transition-all duration-300" 
               required
+              aria-label={data.placeholder} // Accessibility
             />
           ))}
         </div>
-        <button className="mt-8">
+        
+        {/* BUTTON - Sleek, accent-colored button with loading state */}
+        <button 
+          type="submit"
+          className="relative 
+                     w-full max-w-sm m-auto block
+                     mt-6 p-3 rounded-lg 
+                     bg-cyan-600 hover:bg-cyan-500 
+                     text-white font-bold text-lg 
+                     shadow-lg shadow-cyan-900/50
+                     transition-all duration-300 
+                     disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={loading}
+        >
           {loading ? <Loader /> : "Register"}
-          <hr className="mt-2 w-20 border" />
         </button>
       </form>
     </div>
