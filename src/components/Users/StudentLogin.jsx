@@ -19,21 +19,23 @@ function StudentLogin() {
 
   const studentLoginData = [
     {
-      placeholder: "Enter Email",
+      placeholder: "Enter Student Email",
       value: student_login_email,
       type: "email",
       stateManager: set_student_login_email,
+      name: "email", // HTML5 addition
     },
     {
       placeholder: "Enter Password",
       value: student_login_password,
       type: "password",
       stateManager: set_student_login_password,
+      name: "password", // HTML5 addition
     },
   ];
 
   const resetAllFields = () => {
-    // Iterate through the lecturerLoginData array and reset each state to empty
+    // Resetting fields only on successful login is often better UX
     studentLoginData.forEach((data) => {
       data.stateManager("");
     });
@@ -43,60 +45,93 @@ function StudentLogin() {
     e.preventDefault();
     setError("");
     setLoading(true);
+    
     try {
-      const lecturerQuery = query(
+      // It's good practice to rename this query variable if you're querying students
+      const studentQuery = query(
         studentCollection,
         where("email", "==", student_login_email)
       );
-      const querySnapshot = await getDocs(lecturerQuery);
+      const querySnapshot = await getDocs(studentQuery);
 
       if (!querySnapshot.empty) {
         await login(student_login_email, student_login_password);
         navigate("/student");
+        resetAllFields(); // Reset only upon successful navigation
       } else {
         setError("Student Login Details Not Found!");
       }
     } catch (error) {
       console.log(error.message);
-      if (error.message.includes("user-not-found")) {
+      // Detailed error messages for better user feedback
+      if (error.message.includes("user-not-found") || error.message.includes("auth/user-not-found")) {
         setError("User Not Found");
-      } else if (error.message.includes("wrong-password")) {
+      } else if (error.message.includes("wrong-password") || error.message.includes("auth/wrong-password")) {
         setError("Wrong Password");
+      } else if (error.message.includes("auth/invalid-email")) {
+        setError("Invalid Email Format");
       } else {
         setError("An unexpected error occurred");
       }
     }
     setLoading(false);
-
-    resetAllFields();
   };
 
   return (
-    <div className="mt-14">
-      {error && <p className="text-red-600 text-center">{error}</p>}
+    <div className="mt-8"> {/* Adjusted margin for better spacing within AuthUI card */}
+      {/* Error Message - Use stark red for visibility */}
+      {error && (
+        <p 
+          className="text-red-500 text-sm font-medium text-center mb-6 p-2 rounded bg-red-900/30 border border-red-900 mx-auto max-w-sm"
+          role="alert" // Accessibility
+        >
+          {error}
+        </p>
+      )}
+
       <form
         onSubmit={studentLogin}
-        className="text-center pt-8 text-white space-x-4 space-y-8 m-auto"
+        className="text-center text-white space-y-6" // Use space-y for vertical rhythm
       >
-        <div className="w-full md:w-1/2 p-2 space-y-8 w-100 m-auto">
+        <div className="w-full space-y-4">
           {studentLoginData.map((data, index) => (
             <input
               key={index}
               type={data.type}
-              name={data.value}
+              name={data.name} // HTML5 addition
+              id={`student-login-${data.name}`} // HTML5 addition
               placeholder={data.placeholder}
               value={data.value}
               onChange={(e) => {
                 data.stateManager(e.target.value);
               }}
-              className="bg-transparent border mx-2  rounded-full p-4 pl-6 w-72"
+              // Sleek, dark input field with cyan focus
+              className="bg-gray-800/60 
+                         border border-gray-700 
+                         rounded-lg p-3 w-full max-w-sm m-auto block 
+                         text-gray-200 placeholder-gray-500
+                         focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400
+                         transition-all duration-300" 
               required
+              aria-label={data.placeholder} // Accessibility
             />
           ))}
         </div>
-        <button className="mt-8">
+        
+        {/* BUTTON - Sleek, accent-colored button with loading state */}
+        <button 
+          type="submit"
+          className="relative 
+                     w-full max-w-sm m-auto block
+                     mt-6 p-3 rounded-lg 
+                     bg-cyan-600 hover:bg-cyan-500 
+                     text-white font-bold text-lg 
+                     shadow-lg shadow-cyan-900/50
+                     transition-all duration-300 
+                     disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={loading}
+        >
           {loading ? <Loader /> : "Login"}
-          <hr className="mt-2 w-20 border" />
         </button>
       </form>
     </div>

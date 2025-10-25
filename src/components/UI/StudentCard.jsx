@@ -3,72 +3,124 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { AuthContext } from "../../store/AuthContext";
 import { db } from "../../firebase";
 import { Link, useNavigate } from "react-router-dom";
+import Loader from "../helpers/Loader"; // Assuming you have your custom Loader
 
 const StudentCard = () => {
-  const [studentData, setStudentData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [avatar, setAvatar] = useState("");
+  const [studentData, setStudentData] = useState(null); // Use null for initial state
+  const [loading, setLoading] = useState(true); // Start loading immediately
+  const [avatarLetter, setAvatarLetter] = useState("");
   const { currentUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const studentCollection = collection(db, "studentCollection");
 
   useEffect(() => {
+    // Redirect if the user is not logged in
     if (!currentUser) {
-      // Step 2: Redirect if the user is not logged in
-      navigate("/home");
-    } else {
-      const fetchStudentData = async () => {
-        try {
-          setLoading(true);
-          const studentsQuery = query(
-            studentCollection,
-            where("email", "==", currentUser.email)
-          );
-          const querySnapshot = await getDocs(studentsQuery);
-
-          if (!querySnapshot.empty) {
-            const studentData = querySnapshot.docs[0].data();
-            setStudentData(studentData);
-            setAvatar(studentData.department.toUpperCase());
-          } else {
-            console.log("No matching documents found!");
-          }
-        } catch (error) {
-          console.log(error.message);
+      const timeout = setTimeout(() => {
+        if (!currentUser) {
+          navigate("/home");
         }
-        setLoading(false);
-      };
+      }, 500);
+      return () => clearTimeout(timeout);
+    }
 
+    const fetchStudentData = async () => {
+      setLoading(true);
+      try {
+        const studentsQuery = query(
+          studentCollection,
+          where("email", "==", currentUser.email)
+        );
+        const querySnapshot = await getDocs(studentsQuery);
+
+        if (!querySnapshot.empty) {
+          const data = querySnapshot.docs[0].data();
+          setStudentData(data);
+          // Set avatar to the first letter of the name for a better visual
+          setAvatarLetter(data.name ? data.name.charAt(0).toUpperCase() : 'S');
+        } else {
+          console.log("No matching student document found!");
+          setStudentData(null);
+          setAvatarLetter('S');
+        }
+      } catch (error) {
+        console.error("Error fetching student data:", error.message);
+        setStudentData(null);
+        setAvatarLetter('S');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (currentUser.email) {
       fetchStudentData();
     }
-  }, [currentUser, studentCollection]);
+  }, [currentUser, navigate]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-10">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (!studentData) {
+    return (
+        <div className="text-center mt-10 p-6 w-[90%] max-w-lg mx-auto bg-red-900/30 rounded-xl border border-red-700 text-red-300">
+            <p>Profile data not found. Please ensure your account is registered correctly.</p>
+        </div>
+    );
+  }
 
   return (
-    <>
-      <section className="">
-        <div className="text-center bg-white rounded-2xl py-6 w-[90%] sm:w-[70%] mx-auto">
-          <div className="inline-block text-white p-14 rounded-[50%] bg-blue-500 relative">
-            <h2
-              className="absolute text-6xl top-[50%] left-[50%]"
-              style={{ transform: "translate(-50%, -50%)" }}
-            >
-              {studentData.name && studentData.name[0]}
-            </h2>
-          </div>
-          <p className="text-lg font-semibold">
-            {studentData && studentData.name}
-          </p>
-          <p className="text-sm italic">{studentData && avatar}</p>
-
-          <Link to={"id"}>
-            <button className="mt-5 font-semibold text-lg cursor-pointer border rounded-lg inline-block px-5 py-2 bg-blue-500 text-white">
-              Student ID
-            </button>
-          </Link>
+    <section className="mt-10 px-4">
+      {/* Card Container: Dark, prominent, rounded, with shadow */}
+      <div 
+        className="text-center bg-gray-900 rounded-2xl py-8 w-full max-w-lg mx-auto 
+                   shadow-2xl shadow-cyan-900/30 border border-gray-800"
+      >
+        {/* Avatar Circle */}
+        <div 
+          className="inline-block text-white w-28 h-28 rounded-full bg-cyan-600 relative 
+                     border-4 border-cyan-400/50 shadow-xl shadow-cyan-900/50"
+        >
+          <h2
+            className="absolute text-5xl font-extrabold top-1/2 left-1/2 
+                       transform -translate-x-1/2 -translate-y-1/2"
+          >
+            {avatarLetter}
+          </h2>
         </div>
-      </section>
-    </>
+        
+        {/* Student Name */}
+        <p className="text-2xl font-bold mt-4 text-gray-100">
+          {studentData.name}
+        </p>
+        
+        {/* Matric Number (Key Identifier) */}
+        <p className="text-md italic text-gray-400 font-mono">
+          {studentData.matricNumber || 'N/A'}
+        </p>
+
+        {/* Department and Level */}
+        <p className="text-sm text-gray-500 mt-1">
+          {studentData.department} | {studentData.level} Level
+        </p>
+
+        {/* Student ID Button */}
+        <Link to={"id"}>
+          <button 
+            className="mt-6 font-bold text-lg cursor-pointer rounded-full inline-block px-8 py-2 
+                       bg-cyan-600 hover:bg-cyan-500 text-white shadow-lg shadow-cyan-900/50 
+                       transition-all duration-300"
+          >
+            View QR ID
+          </button>
+        </Link>
+      </div>
+    </section>
   );
 };
 

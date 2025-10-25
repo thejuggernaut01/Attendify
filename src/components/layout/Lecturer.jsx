@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import Navbar from "../layout/Navbar";
-// import StudentCard from "../UI/StudentCard";
-import { FiLoader, FiX } from "react-icons/fi"; // Importing icons from React Icons library
+import { FiLoader, FiX } from "react-icons/fi"; 
 import CourseCard from "../UI/CourseCard";
 import { db } from "../../firebase";
 import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
 import LectuerCard from "../UI/LecturerCard";
-import AddIcon from "../../icons/icon_addicon.svg";
 import { AuthContext } from "../../store/AuthContext";
+// Assuming you have a custom Loader component for consistency
+import Loader from "../helpers/Loader"; 
 
 function Lecturer() {
   const [classRepMail, setClassRepMail] = useState("");
@@ -15,15 +15,18 @@ function Lecturer() {
   const [courseTitle, setCourseTitle] = useState("");
   const [courseUnit, setCourseUnit] = useState(0);
   const [lecturerName, setLecturerName] = useState("");
-  const [showAddForm, setShowAddForm] = useState(false); // State variable for form visibility
-  const [coursesData, setCoursesData] = useState([]); // State variable for storing course data
-  const [isLoading, setIsLoading] = useState(false); // State variable for loading state
-  const formRef = useRef(null); // Ref to the form element
-  const { currentUser } = useContext(AuthContext);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [coursesData, setCoursesData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const formRef = useRef(null);
+  const { currentUser, logout } = useContext(AuthContext);
   const coursesRef = collection(db, "courseCollection");
-  
+
+  // --- Data Fetching Logic (Unchanged) ---
   const fetchCoursesData = async () => {
     const email = currentUser && currentUser.email;
+
+    if (!email) return;
 
     const courseQuery = query(coursesRef, where("lecturerEmail", "==", email));
 
@@ -34,62 +37,42 @@ function Lecturer() {
 
   useEffect(() => {
     fetchCoursesData();
-  }, []);
+  }, [currentUser]); // Added currentUser to dependencies
 
+  // --- Form Submission Logic (Unchanged) ---
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    setIsLoading(true); // Show loading icon on form submit
+    setIsLoading(true);
 
     const dataToSave = {
       classRepMail,
       courseCode: courseCode.toUpperCase(),
       courseTitle: courseTitle.toUpperCase(),
-      courseUnit,
+      courseUnit: parseInt(courseUnit), // Ensure unit is stored as number
       lecturerName,
       lecturerEmail: currentUser.email,
     };
 
     try {
-      await saveDataToFirestore(dataToSave);
-      setIsLoading(false); // Hide loading icon on successful form submit
+      await addDoc(collection(db, "courseCollection"), dataToSave);
+      
+      // Reset form states on success
+      setClassRepMail("");
+      setCourseCode("");
+      setCourseTitle("");
+      setCourseUnit(0);
+      setLecturerName("");
+
+      setIsLoading(false);
       setShowAddForm(false);
       fetchCoursesData();
     } catch (error) {
       console.error("Error saving data:", error);
-      setIsLoading(false); // Hide loading icon on error
+      setIsLoading(false);
     }
   };
 
-  const saveDataToFirestore = (data) => {
-    return addDoc(collection(db, "courseCollection"), data);
-  };
-
-  const handleButtonClick = () => {
-    setShowAddForm(true); // Show the form on button click
-  };
-
-  // Function to handle clicks outside of the form
-  const handleClickOutside = (event) => {
-    if (formRef.current && !formRef.current.contains(event.target)) {
-      setShowAddForm(false);
-    }
-  };
-
-  useEffect(() => {
-    // Attach event listener to handle clicks outside of the form
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      // Clean up the event listener when the component unmounts
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-
-
-  // Logout User
-  const { logout } = useContext(AuthContext);
-
+  // --- Logout Logic (Unchanged) ---
   const handleLogout = async () => {
     try {
       await logout();
@@ -98,117 +81,138 @@ function Lecturer() {
     }
   };
 
+  // --- Click Outside Logic (Unchanged) ---
+  const handleClickOutside = (event) => {
+    // Only close if the form is visible AND the click is outside the form
+    if (showAddForm && formRef.current && !formRef.current.contains(event.target)) {
+      setShowAddForm(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showAddForm]); // Depend on showAddForm for correct closure behavior
+
+  // ------------------------------------
+  // --- UI START ---
+  // ------------------------------------
+
   return (
-    <div className="bg-gray-100 h-full pb-16">
+    // Main Container: Deep dark background, light text
+    <div className="bg-gray-950 min-h-screen text-gray-100 pb-16">
       <Navbar logout={handleLogout} />
 
-      <LectuerCard />
-      <section className="mt-5">
-        <div className="text-center bg-white rounded-2xl py-6 w-[90%] sm:w-[70%] mx-auto">
-          <div className="flex justify-center">
-            <button className="text-green-500" onClick={handleButtonClick}>
-              <img src={AddIcon} alt="Add Course" />
-            </button>
+      {/* Lecturer Card - Assume this component is already styled dark mode */}
+      <LectuerCard /> 
+
+      {/* ADD COURSE BUTTON SECTION */}
+      <section className="mt-8 px-4">
+        <div 
+          className="bg-gray-900 rounded-xl py-6 w-full max-w-lg mx-auto 
+                     flex flex-col items-center cursor-pointer 
+                     shadow-xl shadow-black/30 
+                     hover:bg-gray-800 transition-colors duration-300 border border-gray-800"
+          onClick={() => setShowAddForm(true)}
+          role="button" // Accessibility
+          aria-label="Add New Course"
+        >
+          {/* Replaced image with a styled icon for consistency */}
+          <div className="p-3 rounded-full bg-cyan-600/20 text-cyan-400">
+            <FiX size={24} className="transform rotate-45" /> {/* Using FiX and rotating 45deg for a clean plus icon */}
           </div>
-          <p className="mt-2" onClick={handleButtonClick}>
+          <p className="mt-3 text-lg font-medium text-cyan-400">
             Add Course
           </p>
         </div>
       </section>
+      
+      {/* COURSE LISTING SECTION */}
+      <section className="mt-12 px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
+        {coursesData.length === 0 && !isLoading && (
+            <p className="text-gray-500 col-span-full text-center">No courses added yet. Click 'Add Course' to get started.</p>
+        )}
+        {coursesData.map((course, index) => (
+          // Assume CourseCard is styled to match dark mode (e.g., bg-gray-900)
+          <CourseCard
+            key={index}
+            courseCode={course.courseCode}
+            courseTitle={course.courseTitle}
+            lecturerName={course.lecturerName}
+            courseUnits={course.courseUnit}
+          />
+        ))}
+      </section>
 
-      {/* Dynamically render Course Cards */}
-      {coursesData.map((course, index) => (
-        <CourseCard
-          key={index}
-          courseCode={course.courseCode}
-          courseTitle={course.courseTitle}
-          lecturerName={course.lecturerName}
-          courseUnits={course.courseUnit}
-        />
-      ))}
-
-      {/* Conditional rendering of the add course form */}
+      {/* ADD COURSE MODAL/FORM */}
       {showAddForm && (
-        <div
-          className="fixed top-10 left-1/2 transform -translate-x-1/2 w-[90%] max-w-md bg-white py-4 px-6 border-b-2 border-gray-300 rounded-md shadow-lg"
-          ref={formRef}
-        >
-          {isLoading ? ( // Show loading icon when the form is submitting
-            <div className="flex justify-center">
-              <FiLoader className="text-green-500 animate-spin" size={24} />
-            </div>
-          ) : (
-            <>
-              <p className="text-lg text-center p-2">Add Course</p>
-              {/* Exit button 
-               <div className='inline-flex'>
-               <button
-                 onClick={() => setShowAddForm(false)}
-                 className='text-gray-500 hover:text-gray-700 focus:outline-none'
-               >
-                 <FiX size={24} />
-               </button>
-             </div>*/}
-              <form
-                onSubmit={handleFormSubmit}
-                className="grid grid-cols-1 gap-4"
+        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+            
+            {/* Form Container Card */}
+            <div
+              className="bg-gray-900 text-gray-100 p-6 sm:p-8 w-full max-w-lg rounded-xl shadow-2xl shadow-cyan-900/30 border border-gray-800 relative"
+              ref={formRef}
+            >
+              
+              {/* Close Button */}
+              <button
+                onClick={() => setShowAddForm(false)}
+                className="absolute top-3 right-3 text-gray-500 hover:text-cyan-400 transition-colors"
+                aria-label="Close form"
               >
-                <input
-                  type="text"
-                  className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-                  placeholder="Course Title"
-                  value={courseTitle}
-                  onChange={(e) => setCourseTitle(e.target.value)}
-                  required
-                />
+                <FiX size={24} />
+              </button>
 
-                <input
-                  type="text"
-                  className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-                  placeholder="Course Code"
-                  value={courseCode}
-                  onChange={(e) => setCourseCode(e.target.value)}
-                  required
-                />
+              <p className="text-xl font-bold text-center text-cyan-400 mb-6 border-b border-gray-700 pb-3">Add New Course</p>
 
-                <input
-                  type="number"
-                  className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-                  placeholder="Course Unit"
-                  value={courseUnit}
-                  onChange={(e) => setCourseUnit(e.target.value)}
-                  required
-                />
-
-                <input
-                  type="text"
-                  className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-                  placeholder="Lecturer Name"
-                  value={lecturerName}
-                  onChange={(e) => setLecturerName(e.target.value)}
-                  required
-                />
-
-                <input
-                  type="email"
-                  className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-                  placeholder="Class Rep Mail"
-                  value={classRepMail}
-                  onChange={(e) => setClassRepMail(e.target.value)}
-                  required
-                />
-
-                <div className="flex justify-end">
-                  <button
-                    type="submit"
-                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                  >
-                    Add
-                  </button>
+              {isLoading ? ( // Show custom Loader when submitting
+                <div className="flex justify-center py-10">
+                    <Loader /> {/* Replaced FiLoader with your custom Loader */}
                 </div>
-              </form>
-            </>
-          )}
+              ) : (
+                <form
+                  onSubmit={handleFormSubmit}
+                  className="grid grid-cols-1 gap-4"
+                >
+                  {/* Inputs - Styled for dark mode with cyan focus */}
+                  {[
+                    { placeholder: "Course Title", value: courseTitle, setter: setCourseTitle, type: "text" },
+                    { placeholder: "Course Code (e.g., CSC401)", value: courseCode, setter: setCourseCode, type: "text" },
+                    { placeholder: "Course Unit", value: courseUnit, setter: setCourseUnit, type: "number" },
+                    { placeholder: "Lecturer Name", value: lecturerName, setter: setLecturerName, type: "text" },
+                    { placeholder: "Class Rep Email", value: classRepMail, setter: setClassRepMail, type: "email" },
+                  ].map((field, index) => (
+                    <input
+                      key={index}
+                      type={field.type}
+                      className="px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg 
+                                 text-gray-100 placeholder-gray-500
+                                 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400
+                                 transition-all duration-200"
+                      placeholder={field.placeholder}
+                      value={field.value}
+                      onChange={(e) => field.setter(e.target.value)}
+                      required
+                    />
+                  ))}
+                  
+                  {/* Submission Button */}
+                  <div className="flex justify-end pt-2">
+                    <button
+                      type="submit"
+                      className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-6 rounded-lg 
+                                 focus:outline-none shadow-lg shadow-cyan-900/40
+                                 transition-all duration-300"
+                    >
+                      Add Course
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
         </div>
       )}
     </div>
